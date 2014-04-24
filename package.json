@@ -5,5 +5,9 @@
     "main": "./lib/index.js",
     "dependencies": {
         "node-etcd": "~2.1.0"
+    },
+    "devDependencies": {
+        "async": "~0.7.0",
+        "underscore": "~1.6.0"
     }
 }
