@@ -1,11 +1,13 @@
 {
     "name": "etcd-watcher",
     "description": "Watch etcd key creation and subsequent changes",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "main": "./lib/index.js",
+    "dependencies": {
+        "underscore": "~1.6.0"
+    },
     "devDependencies": {
         "node-etcd": "~2.1.0",
-        "async": "~0.7.0",
-        "underscore": "~1.6.0"
+        "async": "~0.7.0"
     }
 }

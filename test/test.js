@@ -9,6 +9,7 @@ var watcher = require('../lib');
 async.series([
     test1,
     test2,
+    testMultiple,
 ], function (err) {
     assert.ifError(err);
     console.log('OK');
@@ -51,6 +52,29 @@ function test2(cb) {
     });
 }
 
+function testMultiple(cb) {
+    var keys = ['/test-ew/1', '/test-ew/2'];
+    var expect = expectSeries([
+        { '/test-ew/1': 'aa', '/test-ew/2': 'bb' },
+        { '/test-ew/1': 'aa', '/test-ew/2': 'bc' },
+    ]);
+
+    async.series([
+        _.bind(etcd.del, etcd, keys[0]),
+        _.bind(etcd.del, etcd, keys[1]),
+    ], function (err) {
+        watcher.watch(etcd, keys, expect.next);
+        async.series([
+            _.bind(etcd.set, etcd, keys[0], 'aa'),
+            _.bind(etcd.set, etcd, keys[1], 'bb'),
+            _.bind(etcd.set, etcd, keys[1], 'bc'),
+        ], function (err) {
+            assert.ifError(err);
+            expect.checkAllReceived(cb);
+        });
+    });
+}
+
 function expectSeries(values) {
     var expectedIndex = 0;
     return {
@@ -60,7 +84,11 @@ function expectSeries(values) {
 
     function next(err, value) {
         assert.ifError(err);
-        assert.equal(value, values[expectedIndex]);
+        var expected = values[expectedIndex];
+        if (_.isObject(expected))
+            assert.deepEqual(value, expected);
+        else
+            assert.equal(value, expected);
         ++expectedIndex;
     }
 

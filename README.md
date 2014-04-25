@@ -20,3 +20,11 @@ watcher.watch(etcd, "key", function (err, value) {
     console.log(value);
 });
 ```
+
+### Watch several keys
+
+```js
+watcher.watch(etcd, ["key1", "key2"], function (err, values) {
+    // values => {key1: value1, key2: value2}
+});
+```
